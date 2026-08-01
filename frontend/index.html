@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CampusBuyAI</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: Arial, sans-serif;
+      }
+      body {
+        margin: 0;
+        background: linear-gradient(135deg, #0f172a, #1d4ed8);
+        color: #f8fafc;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .card {
+        width: min(92vw, 760px);
+        background: rgba(15, 23, 42, 0.9);
+        padding: 24px;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+      }
+      h1 { margin-top: 0; }
+      .panel { margin-top: 16px; }
+      textarea, button { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #64748b; font-size: 16px; }
+      button { margin-top: 10px; background: #38bdf8; color: #082f49; font-weight: 700; cursor: pointer; }
+      .reply { margin-top: 16px; background: #1e293b; padding: 14px; border-radius: 12px; min-height: 60px; }
+      .hint { color: #cbd5e1; font-size: 14px; margin-top: 8px; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>CampusBuyAI TEST 123</h1>
+      <p>Ask about buying, selling, or finding campus deals quickly.</p>
+      <div class="panel">
+        <textarea id="message" rows="4" placeholder="Try: Help me sell my used laptop for a good price"></textarea>
+        <button onclick="sendMessage()">Ask CampusBuyAI</button>
+      </div>
+      <div id="reply" class="reply">Waiting for your request...</div>
+      <div class="hint">Examples: textbook, dorm items, laptop, bike, or furniture.</div>
+    </div>
+
+    <script>
+      async function sendMessage() {
+        const message = document.getElementById("message").value.trim();
+        const replyBox = document.getElementById("reply");
+
+        if (!message) {
+          replyBox.textContent = "Please enter a question first.";
+          return;
+        }
+
+        replyBox.textContent = "Thinking...";
+
+        try {
+          const url = "http://localhost:3000/api/chat";
+          const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message }),
+            cache: "no-store"
+          });
+
+          const data = await response.json();
+          replyBox.textContent = data.reply || "No response received.";
+        } catch (error) {
+          console.error(error);
+          replyBox.textContent = `Error: ${error?.message || "Unknown error"}`;
+        }
+      }
+    </script>
+  </body>
+</html>
